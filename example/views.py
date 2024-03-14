@@ -12,6 +12,11 @@ def index(request):
             <div class="container" style="text-align: center; margin-top: 10rem;">
                 <h1>CIS-375 Hotel Management API</h1>
                 <p>Coming Soon.</p>
+                <p>
+                    <a target="_blank" href="https://github.com/RyanAIIen/cis-375-proj-2024-03-api">
+                        See the Code
+                    </a>
+                </p>
             </div>
         </body>
     </html>
