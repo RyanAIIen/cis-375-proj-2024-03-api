@@ -4,6 +4,7 @@ from django.contrib.auth.admin import (
     GroupAdmin as DefaultGroupAdmin,
 )
 from django.contrib.auth.models import Group
+from django.utils.translation import gettext_lazy as _
 
 from .forms import GroupAdminForm
 from .models import User
@@ -11,8 +12,45 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(DefaultUserAdmin):
-    # https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L44'''
-    pass
+    '''
+    https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L44
+    '''
+
+    fieldsets = (
+        (
+            _("Login info"),
+            {"fields": ("email", "password")},
+        ),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name")},
+        ),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                ),
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+    add_fieldsets = (
+        (None, {"classes": ("wide"), "fields": ("password1", "password2")}),
+    )
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        "is_staff",
+    )
+    search_fields = ("email" "first_name", "last_name")
+    ordering = ("email",)
 
 
 admin.site.unregister(Group)
@@ -20,5 +58,8 @@ admin.site.unregister(Group)
 
 @admin.register(Group)
 class GroupAdmin(DefaultGroupAdmin):
-    # https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L29'''
+    '''
+    https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L29
+    '''
+
     form = GroupAdminForm

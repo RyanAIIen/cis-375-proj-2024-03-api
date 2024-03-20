@@ -11,11 +11,11 @@ User = get_user_model()
 
 
 def create_development_superuser(apps, schema_editor):
-    if settings.AUTH_SUPERUSER_USERNAME and settings.AUTH_SUPERUSER_PASSWORD:
+    if settings.AUTH_SUPERUSER_EMAIL and settings.AUTH_SUPERUSER_PASSWORD:
         superuser = User.objects.create_superuser(
-            username=settings.AUTH_SUPERUSER_USERNAME,
-            password=settings.AUTH_SUPERUSER_PASSWORD,
-            email=None
+            email=settings.AUTH_SUPERUSER_EMAIL,
+            password=settings.AUTH_SUPERUSER_PASSWORD, 
+            first_name='Admin',
         )
         logger.info('Superuser \'{superuser}\' created.'.format(superuser=superuser))
     else:
@@ -23,7 +23,7 @@ def create_development_superuser(apps, schema_editor):
 
 
 def delete_development_superuser(apps, schema_editor):
-    superuser = User.objects.filter(username=settings.AUTH_SUPERUSER_USERNAME).first()
+    superuser = User.objects.filter(email=settings.AUTH_SUPERUSER_EMAIL).first()
     if superuser:
         superuser.delete()
         logger.info('Superuser \'{superuser}\' deleted.'.format(superuser=superuser))

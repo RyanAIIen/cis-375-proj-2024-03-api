@@ -1,8 +1,9 @@
 __pycache__/
-.env
+.env*
 .media/
 .static/
 .venv
+.vscode/
 *.log
 *.pyc
 *.sqlite3
@@ -10,4 +11,4 @@ media/
 static/
 venv/
 
-!dev.env
+!.env.dev
