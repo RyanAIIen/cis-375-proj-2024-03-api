@@ -1,17 +1,13 @@
-.vercel
+__pycache__/
+.env
+.media/
+.static/
+.venv
 *.log
 *.pyc
 *.sqlite3
-__pycache__
-media
-
-# Environments
-.env
-.venv
-env/
+media/
+static/
 venv/
-ENV/
-env.bak/
-venv.bak/
 
 !dev.env
