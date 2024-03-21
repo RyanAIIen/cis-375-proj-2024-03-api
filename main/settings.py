@@ -87,6 +87,8 @@ DATABASES = {
 } if ENVIRONMENT == 'development' else {}
 
 AUTH_USER_MODEL = 'users.User'
+AUTH_SUPERUSER_USERNAME = os.getenv('AUTH_SUPERUSER_USERNAME')
+AUTH_SUPERUSER_PASSWORD = os.getenv('AUTH_SUPERUSER_PASSWORD')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

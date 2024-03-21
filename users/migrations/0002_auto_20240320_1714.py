@@ -9,26 +9,26 @@ logger = logging.getLogger('django')
 
 User = get_user_model()
 
-SU_USERNAME = 'admin'
-SU_PASSWORD = 'GoBlue!'
-
 
 def create_development_superuser(apps, schema_editor):
-    if settings.ENVIRONMENT == 'development':
+    if settings.AUTH_SUPERUSER_USERNAME and settings.AUTH_SUPERUSER_PASSWORD:
         superuser = User.objects.create_superuser(
-            username=SU_USERNAME, password=SU_PASSWORD, email=None)
-        logger.info('Superuser {superuser} created'.format(superuser=superuser))
+            username=settings.AUTH_SUPERUSER_USERNAME,
+            password=settings.AUTH_SUPERUSER_PASSWORD,
+            email=None
+        )
+        logger.info('Superuser \'{superuser}\' created.'.format(superuser=superuser))
     else:
-        logger.info('Superuser not created in {env} environment'.format(env=settings.ENVIRONMENT))
+        logger.info('Superuser not created.')
 
 
 def delete_development_superuser(apps, schema_editor):
-    superuser = User.objects.filter(username=SU_USERNAME).first()
+    superuser = User.objects.filter(username=settings.AUTH_SUPERUSER_USERNAME).first()
     if superuser:
-        logger.info('Deleting superuser {superuser}'.format(superuser=superuser))
         superuser.delete()
+        logger.info('Superuser \'{superuser}\' deleted.'.format(superuser=superuser))
     else:
-        logger.info('Superuser not found, did not delete'.format(env=settings.ENVIRONMENT))
+        logger.info('Superuser not found; did not delete.')
 
 
 class Migration(migrations.Migration):
