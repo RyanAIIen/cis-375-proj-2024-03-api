@@ -21,15 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
-
-print('#'*80)
-print('#'*80)
-
-print(ENVIRONMENT)
-
-print('#'*80)
-print('#'*80)
-
 if ENVIRONMENT == 'development':
     from dotenv import load_dotenv
     load_dotenv('dev.env')
