@@ -83,14 +83,14 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "db.sqlite3",
+    } if ENVIRONMENT == 'development' else {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
     }
-} if ENVIRONMENT == 'development' else {
-    'ENGINE': 'django.db.backends.postgresql',
-    'HOST': os.getenv('POSTGRES_HOST'),
-    'PORT': os.getenv('POSTGRES_PORT'),
-    'NAME': os.getenv('POSTGRES_DB'),
-    'USER': os.getenv('POSTGRES_USER'),
-    'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
 }
 
 AUTH_USER_MODEL = 'users.User'
