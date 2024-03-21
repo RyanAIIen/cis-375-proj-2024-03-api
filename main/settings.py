@@ -84,7 +84,14 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": "db.sqlite3",
     }
-} if ENVIRONMENT == 'development' else {}
+} if ENVIRONMENT == 'development' else {
+    'ENGINE': 'django.db.backends.postgresql',
+    'HOST': os.getenv('POSTGRES_HOST'),
+    'PORT': os.getenv('POSTGRES_PORT'),
+    'NAME': os.getenv('POSTGRES_DB'),
+    'USER': os.getenv('POSTGRES_USER'),
+    'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+}
 
 AUTH_USER_MODEL = 'users.User'
 AUTH_SUPERUSER_USERNAME = os.getenv('AUTH_SUPERUSER_USERNAME')
@@ -124,7 +131,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'main/static/'),)
+
+STATIC_DIRNAME = 'static'
+STATIC_URL = f'/{STATIC_DIRNAME}/'
+STATIC_ROOT = os.path.join(BASE_DIR, f'.{STATIC_DIRNAME}')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
