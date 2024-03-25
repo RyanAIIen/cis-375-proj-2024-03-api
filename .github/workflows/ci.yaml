@@ -1,0 +1,131 @@
+name: Django CI/CD Workflow
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+  push:
+    branches:
+      - staging
+      - main
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: github-actions
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependency
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Check Python version
+        run: python --version
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Check Code Formatting
+        run: black --check .
+
+      - name: Run Migrations
+        run: python manage.py migrate
+
+      - name: Run Test
+        run: python manage.py test
+
+  package:
+    runs-on: ubuntu-latest
+
+    needs: [health-check]
+
+    if: ${{ github.event_name == 'push' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build & Publish Image
+        uses: docker/build-push-action@v1
+        env:
+          app_name: app
+        with:
+          registry: gcr.io
+          username: _json_key # default for gcr.io
+          repository: ${{secrets.GKE_PROJECT}}/github-django-actions/app
+          password: ${{ secrets.GKE_PASSWORD }}
+          tag_with_sha: true
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: [package]
+
+    if: ${{ github.event_name == 'push' }} # will be fire if the trigger event is a push event.
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@main
+        with:
+          version: '270.0.0'
+          service_account_email: ${{ secrets.GKE_EMAIL }}
+          service_account_key: ${{ secrets.GKE_PASSWORD }}
+
+      - name: Set Repo Location
+        id: repo
+        run: echo "::set-output name=repo_name::gcr.io/${{secrets.GKE_PROJECT}}/github-django-actions/app:sha-$(git rev-parse --short HEAD)" # we are setting the image location as output to be used in later step
+
+      - name: Check Repo Location
+        run: echo ${{ steps.repo.outputs.repo_name }}
+
+      - name: Install Helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+
+      - name: Connect to kubernetes cluster
+        run: |
+          gcloud container clusters get-credentials ${{secrets.GKE_CLUSTER}} --zone ${{secrets.GKE_ZONE}} --project ${{secrets.GKE_PROJECT}}
+
+      - name: Helm Deploy
+        run: >
+          helm upgrade
+          --install
+          --set image=${{ steps.repo.outputs.repo_name }}
+          --set user=${{ secrets.DB_USER }}
+          --set password=${{ secrets.DB_PASSWORD }}
+          --set host=${{ secrets.DB_HOST }}
+          --set port=${{ secrets.DB_PORT }}
+          --set name=${{ secrets.DB_NAME }}
+          --wait
+          --atomic
+          app
+          ./k8s
+
+      - name: Check pods
+        run: kubectl get pods
