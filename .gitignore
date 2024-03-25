@@ -1,6 +1,7 @@
 __pycache__/
 .env
 .media/
+.static/
 .vercel
 *.log
 *.pyc
