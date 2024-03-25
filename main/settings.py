@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 if ENVIRONMENT == 'development':
     from dotenv import load_dotenv
+
     load_dotenv('dev.env')
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -78,17 +79,21 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite3",
-    } if ENVIRONMENT == 'development' else {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-    }
+    'default': (
+        {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+        }
+        if ENVIRONMENT == 'development'
+        else {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.getenv('POSTGRES_HOST'),
+            'PORT': os.getenv('POSTGRES_PORT'),
+            'NAME': os.getenv('POSTGRES_DB'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        }
+    )
 }
 
 AUTH_USER_MODEL = 'users.User'
