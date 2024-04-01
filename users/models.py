@@ -1,5 +1,7 @@
-from django.contrib.auth.models import (AbstractUser,
-                                        UserManager as DefaultUserManager)
+from django.contrib.auth.models import (
+    AbstractUser,
+    UserManager as DefaultUserManager,
+)
 
 
 class UserManager(DefaultUserManager):
