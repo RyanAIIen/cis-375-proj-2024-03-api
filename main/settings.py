@@ -52,8 +52,6 @@ DOMAIN = config.get('DOMAIN')
 
 ALLOWED_HOSTS = split_env(config.get('ALLOWED_HOSTS'))
 
-CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
-
 
 # Application definition
 
@@ -148,7 +146,6 @@ DATABASES = {'default': default_db}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
         'users.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
