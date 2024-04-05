@@ -273,7 +273,7 @@ else:
     AWS_MEDIA_LOCATION = 'media'
     AWS_S3_CUSTOM_DOMAIN = config.get('AWS_S3_CUSTOM_DOMAIN')
     STORAGES = {
-        'default': {'BACKEND': 'custom_storages.CustomS3Boto3Storage'},
+        'default': {'BACKEND': 'main.storages.S3Boto3Storage'},
         'staticfiles': {
             'BACKEND': 'storages.backends.s3boto3.S3StaticStorage'
         },
