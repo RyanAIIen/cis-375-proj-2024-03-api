@@ -5,12 +5,18 @@ from django.contrib.auth.admin import (
 )
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
+from social_django.models import Association, Nonce, UserSocialAuth
 
+from main.admin import admin_site
 from .forms import GroupAdminForm
 from .models import User
 
+admin_site.register(Association, site=admin_site)
+admin_site.register(Nonce, site=admin_site)
+admin_site.register(UserSocialAuth, site=admin_site)
 
-@admin.register(User)
+
+@admin.register(User, site=admin_site)
 class UserAdmin(DefaultUserAdmin):
     '''
     https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L44
@@ -56,7 +62,7 @@ class UserAdmin(DefaultUserAdmin):
 admin.site.unregister(Group)
 
 
-@admin.register(Group)
+@admin.register(Group, site=admin_site)
 class GroupAdmin(DefaultGroupAdmin):
     '''
     https://github.com/django/django/blob/master/django/contrib/auth/admin.py#L29
