@@ -6,8 +6,10 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 """
 
 import os
+import sys
 from pathlib import Path
 
+import dj_database_url
 from dotenv import dotenv_values
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -100,23 +102,31 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': (
-        {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "db.sqlite3",
-        }
-        if ENVIRONMENT == envs['DEV']
-        else {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': config.get('POSTGRES_HOST', 'postgres'),
-            'PORT': config.get('POSTGRES_PORT', 5432),
-            'NAME': 'ci_db' if CI else config.get('POSTGRES_DB'),
-            'USER': 'ci_db_user' if CI else config.get('POSTGRES_USER'),
-            'PASSWORD': 'ci_db_pw' if CI else config.get('POSTGRES_PASSWORD'),
-        }
-    )
-}
+
+if CI:
+    default_db = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'postgres',
+        'PORT': 5432,
+        'NAME': 'ci_db',
+        'USER': 'ci_db_user',
+        'PASSWORD': 'ci_db_pw',
+    }
+elif (
+    ENVIRONMENT != envs['DEV']
+    and len(sys.argv) > 0
+    and sys.argv[1] != 'collectstatic'
+):
+    if os.getenv("DATABASE_URL", None) is None:
+        raise Exception("DATABASE_URL environment variable not defined")
+    default_db = dj_database_url.parse(config.get("DATABASE_URL"))
+else:
+    default_db = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+    }
+
+DATABASES = {'default': default_db}
 
 
 # Django REST Framework (DRF)
