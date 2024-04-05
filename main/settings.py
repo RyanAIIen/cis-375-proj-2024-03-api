@@ -34,6 +34,10 @@ config = (
 )
 
 SECRET_KEY = config.get('SECRET_KEY')
+if not SECRET_KEY and ENVIRONMENT in [envs['DEV'], envs['CI']]:
+    # NOT FOR PRODUCTION USE
+    SECRET_KEY = "If you don't know where you want to go, then it doesn't matter which path you take."
+
 DEBUG = config.get('DEBUG') == 'True'
 
 DOMAIN = config.get('DOMAIN')
