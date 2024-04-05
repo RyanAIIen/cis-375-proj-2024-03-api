@@ -283,8 +283,7 @@ else:
 # Email
 # https://docs.djangoproject.com/en/5.0/topics/email
 
-USE_CONSOLE_EMAIL = True
-if USE_CONSOLE_EMAIL:
+if ENVIRONMENT == envs['DEV']:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_BACKEND = 'django_ses.SESBackend'

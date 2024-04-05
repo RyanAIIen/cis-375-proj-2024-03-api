@@ -25,6 +25,6 @@ urlpatterns = [
         RedirectView.as_view(url="/static/favicon.ico", permanent=True),
     ),
     path('admin/', admin.site.urls),
-    path('api/', include('djoser.urls')),
-    path('api/', include('users.urls')),
+    path('', include('djoser.urls')),
+    path('', include('users.urls')),
 ]
