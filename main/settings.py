@@ -12,6 +12,14 @@ from pathlib import Path
 import dj_database_url
 from dotenv import dotenv_values
 
+
+def split_env(env, delimiter=','):
+    if env:
+        return env.split(delimiter)
+    else:
+        return []
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 envs = {
@@ -41,7 +49,9 @@ if not SECRET_KEY and ENVIRONMENT in [envs['DEV'], envs['CI']]:
 DEBUG = config.get('DEBUG') == 'True'
 
 DOMAIN = config.get('DOMAIN')
-ALLOWED_HOSTS = config.get('ALLOWED_HOSTS', '').split(',')
+
+ALLOWED_HOSTS = split_env(config.get('ALLOWED_HOSTS'))
+
 CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
 
 
@@ -193,9 +203,9 @@ DJOSER = {
     'SET_PASSWORD_RETYPE': True,
     'USER_CREATE_PASSWORD_RETYPE': True,
     #
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': config.get(
-        'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS', ''
-    ).split(','),
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': split_env(
+        config.get('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS')
+    ),
 }
 
 AUTH_COOKIE = 'access'
@@ -234,7 +244,7 @@ USE_TZ = True
 # django-cors-headers
 # https://github.com/adamchainz/django-cors-headers?tab=readme-ov-file#configuration
 
-CORS_ALLOWED_ORIGINS = config.get('CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOWED_ORIGINS = split_env(config.get('CORS_ALLOWED_ORIGINS'))
 CORS_ALLOW_CREDENTIALS = True
 
 
