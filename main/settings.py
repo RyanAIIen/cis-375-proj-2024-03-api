@@ -193,7 +193,7 @@ DJOSER = {
     'TOKEN_MODEL': None,
     #
     'ACTIVATION_URL': 'activation/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'reset-password/{uid}/{token}',
     #
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
